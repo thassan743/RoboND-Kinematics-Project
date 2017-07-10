@@ -324,7 +324,8 @@ TrajectorySampler::TrajectorySampler(ros::NodeHandle nh)
                              rviz_visual_tools::WHITE, rviz_visual_tools::XXXXLARGE);
     visual_tools.trigger();
     CloseGripper();
-    visual_tools.prompt("next step");
+    ros::Duration(5.0).sleep();
+	visual_tools.prompt("next step");
 
     /*
      * Retract the gripper
