@@ -19,8 +19,11 @@ from geometry_msgs.msg import Pose
 from mpmath import *
 from sympy import *
 import numpy as np
+import sys
+import time
 
 def handle_calculate_IK(req):
+    count = 1
     rospy.loginfo("Received %s eef-poses from the plan" % len(req.poses))
     if len(req.poses) < 1:
         print "No valid poses received"
@@ -110,7 +113,16 @@ def handle_calculate_IK(req):
         # Corrected Homogeneous Transform
         T_total = T0_G * R_corr
         
+        # save current time for measuring IK time
+        start_time = time.time()
+        
         for x in xrange(0, len(req.poses)):
+            #Print status to console, updates pose count and elapsed time
+            print 'Calculating IK for pose ', count, '/', len(req.poses), 'Elapsed Time (s): {0:.1f}'.format(time.time()-start_time), '\r',
+            if (x == len(req.poses) - 1):
+                print ''
+            sys.stdout.flush()
+            count += 1
             
             # IK code starts here
             joint_trajectory_point = JointTrajectoryPoint()
@@ -215,7 +227,7 @@ def handle_calculate_IK(req):
             joint_trajectory_list.append(joint_trajectory_point)
 
         rospy.loginfo("length of Joint Trajectory List: %s" % len(joint_trajectory_list))
-        
+        print ''
         return CalculateIKResponse(joint_trajectory_list)
 
 
